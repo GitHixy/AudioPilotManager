@@ -1,0 +1,96 @@
+<UserControl x:Class="AudioPilotManager.Views.ProfilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:AudioPilotManager.Controls">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,14,28">
+            <TextBlock Text="Profiles" Style="{StaticResource TitleText}" />
+            <TextBlock Text="Save your whole mix (device volumes, app levels, mutes and the default output) and bring it back in one click, from here or from the tray."
+                       Style="{StaticResource SubtitleText}" Margin="0,4,0,24" />
+
+            <!-- Save -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,24">
+                <StackPanel>
+                    <TextBlock Text="Save the current mix" Style="{StaticResource StrongText}" Margin="0,0,0,12" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid>
+                            <TextBox x:Name="NameBox" Text="{Binding NewProfileName, UpdateSourceTrigger=PropertyChanged}" MaxLength="40"
+                                     AutomationProperties.Name="Profile name">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding SaveProfileCommand}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <TextBlock Text="Name it, e.g. Gaming or Meeting" Margin="12,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"
+                                       Foreground="{DynamicResource TextTertiaryBrush}" FontSize="14"
+                                       Visibility="{Binding NewProfileName, Converter={StaticResource InvNullToVis}}" />
+                        </Grid>
+                        <Button Grid.Column="1" Style="{StaticResource AccentButton}" Command="{Binding SaveProfileCommand}" Margin="10,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE74E;" Style="{StaticResource Icon}" FontSize="13" Foreground="{DynamicResource AccentForegroundBrush}" />
+                                <TextBlock Text="Save profile" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding ProfileSuggestions}" Margin="0,12,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding}" Padding="12,5" FontSize="12.5" Margin="0,0,8,0" Foreground="{DynamicResource TextSecondaryBrush}"
+                                        Command="{Binding DataContext.SuggestNameCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,12,0,0"
+                               Text="Saving with an existing name updates that profile. Apps that aren't running pick up their level the next time they start." />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Your profiles" Style="{StaticResource SectionText}" Visibility="{Binding HasProfiles, Converter={StaticResource BoolToVis}}" />
+            <ItemsControl ItemsSource="{Binding Profiles}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,10" Padding="16,14" c:Entrance.Enabled="True" c:Entrance.Offset="8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="42" Height="42" CornerRadius="12" Background="{DynamicResource AccentGradientDiagonalBrush}">
+                                    <TextBlock Text="{Binding Name, Converter={x:Static c:InitialConverter.Instance}}" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentForegroundBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel Grid.Column="1" Margin="14,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource StrongText}" FontSize="15" />
+                                    <TextBlock Text="{Binding Summary}" Style="{StaticResource CaptionText}" Margin="0,2,0,0" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource AccentButton}" Content="Apply" Command="{Binding ApplyCommand}" Padding="18,7" />
+                                    <Button Style="{StaticResource GhostButton}" Content="Update" Command="{Binding UpdateCommand}" Padding="12,7" Margin="6,0,0,0"
+                                            ToolTip="Overwrite this profile with the current mix" />
+                                    <Button Style="{StaticResource IconButton}" Content="&#xE74D;" Command="{Binding DeleteCommand}" Margin="2,0,0,0"
+                                            ToolTip="Delete profile" AutomationProperties.Name="Delete profile" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <StackPanel Margin="0,24,0,0" HorizontalAlignment="Center" Visibility="{Binding HasProfiles, Converter={StaticResource InvBoolToVis}}">
+                <TextBlock Text="&#xE8F1;" Style="{StaticResource Icon}" FontSize="36" Foreground="{DynamicResource TextTertiaryBrush}" />
+                <TextBlock Text="No profiles yet" Style="{StaticResource StrongText}" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                <TextBlock Text="Set things up the way you like, then save it above." Style="{StaticResource CaptionText}" HorizontalAlignment="Center" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

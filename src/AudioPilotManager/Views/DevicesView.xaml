@@ -1,0 +1,38 @@
+<UserControl x:Class="AudioPilotManager.Views.DevicesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,14,28">
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Devices" Style="{StaticResource TitleText}" />
+                    <TextBlock Text="Every speaker, headset and microphone Windows can use: volume, channels, balance, and which one is the default."
+                               Style="{StaticResource SubtitleText}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource GhostButton}" Command="{Binding OpenSoundPanelCommand}" VerticalAlignment="Bottom"
+                        ToolTip="Open the classic Windows Sound control panel">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE8A7;" Style="{StaticResource Icon}" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock Text="Windows sound panel" Margin="8,0,0,0" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                <TextBlock Text="&#xE7F5;" Style="{StaticResource Icon}" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Margin="4,0,0,10" />
+                <TextBlock Text="Output" Style="{StaticResource SectionText}" Margin="8,0,0,10" />
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding Outputs}" ItemTemplate="{StaticResource DeviceCard}" />
+
+            <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                <TextBlock Text="&#xE720;" Style="{StaticResource Icon}" FontSize="12" Foreground="{DynamicResource TextTertiaryBrush}" Margin="4,0,0,10" />
+                <TextBlock Text="Input" Style="{StaticResource SectionText}" Margin="8,0,0,10" />
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding Inputs}" ItemTemplate="{StaticResource DeviceCard}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
