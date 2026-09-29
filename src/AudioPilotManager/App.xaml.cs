@@ -84,12 +84,36 @@ public partial class App : Application
             return;
         }
 
-        _vm = new MainViewModel(_audio, _settings);
+        try
+        {
+            StartUi(e);
+        }
+        catch (Exception ex)
+        {
+            // Without this the dispatcher handler below swallows the error and leaves a process with no window and no tray icon.
+            Log.Error("Start-up failed", ex);
+            MessageBox.Show("Audio Pilot Manager couldn't start.\n\n" + ex.Message + "\n\nDetails are in the log file:\n" + Log.FilePath,
+                "Audio Pilot Manager", MessageBoxButton.OK, MessageBoxImage.Error);
+            _exiting = true;
+            Shutdown();
+            return;
+        }
+
+#if DEBUG
+        // Developer aids for checking the transient windows without a tray click or hotkey.
+        if (e.Args.Contains("--debug-flyout")) Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => _flyout?.ShowNearTray());
+        if (e.Args.Contains("--debug-osd")) Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => _osd?.Show(Glyphs.MicrophoneOff, "Microphone muted"));
+#endif
+    }
+
+    private void StartUi(StartupEventArgs e)
+    {
+        _vm = new MainViewModel(_audio!, _settings!);
         _osd = new OsdWindow();
         _vm.OsdRequested += (glyph, text) => _osd.Show(glyph, text);
         _vm.HotkeysChanged += (_, _) => RegisterHotkeys();
 
-        _window = new MainWindow(_vm, _settings);
+        _window = new MainWindow(_vm, _settings!);
         _window.CloseRequested += OnWindowCloseRequested;
         _window.VisibilityChanged += (_, _) => UpdateMetering();
 
@@ -121,7 +145,7 @@ public partial class App : Application
         listener.Start();
 
         var minimized = e.Args.Any(a => string.Equals(a, StartupService.MinimizedArg, StringComparison.OrdinalIgnoreCase))
-                        && _settings.Current.StartMinimized;
+                        && _settings!.Current.StartMinimized;
         if (minimized)
         {
             _window.PrepareHidden();
@@ -132,12 +156,6 @@ public partial class App : Application
         }
 
         UpdateMetering();
-
-#if DEBUG
-        // Developer aids for checking the transient windows without a tray click or hotkey.
-        if (e.Args.Contains("--debug-flyout")) Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => _flyout.ShowNearTray());
-        if (e.Args.Contains("--debug-osd")) Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => _osd.Show(Glyphs.MicrophoneOff, "Microphone muted"));
-#endif
     }
 
     private void RegisterHotkeys()

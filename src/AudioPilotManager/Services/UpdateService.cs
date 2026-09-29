@@ -31,11 +31,12 @@ public static class UpdateService
     private const string InstallerAppId = "{6E4B7C1A-3F2D-4B8E-9A51-2C7D9F0E4A6B}_is1";
     private const string OldSuffix = ".old";
 
-    private static readonly HttpClient Http = CreateClient();
-    private static ProcessStartInfo? _pendingLaunch;
-
+    // Must stay above Http: static initializers run in textual order and CreateClient reads it.
     public static Version CurrentVersion { get; } =
         Normalize(Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0));
+
+    private static readonly HttpClient Http = CreateClient();
+    private static ProcessStartInfo? _pendingLaunch;
 
     /// <summary>True when this copy was installed by Setup (so updates go through the installer).</summary>
     public static bool IsInstalled { get; } = DetectInstalled();

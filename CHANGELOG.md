@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1 — 2026-09-29
+
+- Fixed: 1.1.0 didn't open at all (the process started, but with no window and no tray icon).
+- A start-up failure now shows an error and exits, instead of leaving an invisible process running.
+
 ## 1.1.0 — 2026-09-29
 
 - Updates: a daily check for new releases on GitHub (can be turned off), a tray notification when one is out, and one-click install from Settings. Downloads are verified against the release's SHA-256 checksums; the installed version updates through Setup, the portable one replaces its own .exe.
