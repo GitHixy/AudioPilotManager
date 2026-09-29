@@ -26,6 +26,11 @@ public sealed class AppSettings
     public bool HotkeysEnabled { get; set; } = true;
     public bool ShowFirstRunTips { get; set; } = true;
 
+    // Updates
+    public bool CheckForUpdates { get; set; } = true;
+    public DateTime? LastUpdateCheck { get; set; }
+    public string? NotifiedVersion { get; set; }      // tray pop-up shown once per new version
+
     public HotkeyBinding MicMuteHotkey { get; set; } = new(HotkeyBinding.Control | HotkeyBinding.Alt, 0x4D);       // Ctrl+Alt+M
     public HotkeyBinding OutputMuteHotkey { get; set; } = new(HotkeyBinding.Control | HotkeyBinding.Alt, 0x4E);    // Ctrl+Alt+N
     public HotkeyBinding CycleOutputHotkey { get; set; } = new(HotkeyBinding.Control | HotkeyBinding.Alt, 0x4F);   // Ctrl+Alt+O
@@ -62,6 +67,8 @@ public sealed class AppSettings
         WindowHeight = Math.Clamp(double.IsFinite(WindowHeight) ? WindowHeight : 680, 460, 3000);
         if (WindowLeft is { } l && !double.IsFinite(l)) WindowLeft = null;
         if (WindowTop is { } t && !double.IsFinite(t)) WindowTop = null;
+        if (LastUpdateCheck > DateTime.Now) LastUpdateCheck = null;
+        if (NotifiedVersion is { Length: > 32 }) NotifiedVersion = null;
     }
 }
 

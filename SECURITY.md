@@ -2,7 +2,7 @@
 
 ## What Audio Pilot Manager can and can't do
 
-- It makes **no network connections**. The only external links (Patreon and GitHub) open in your browser, and only when you click them.
+- Its only network connection is the **update check** to the GitHub releases API (once a day, can be turned off in Settings → Updates). An update is downloaded only when you choose to install it, only from this repository's release files, and it is checked against the published `SHA256SUMS.txt` before it runs. The other external links (Patreon and GitHub) open in your browser, and only when you click them.
 - It runs **without administrator rights** and requests none (`asInvoker` manifest).
 - It uses the documented Windows Core Audio APIs to read and change volumes and to list audio sessions, plus the Sound control panel's interface to change the default device. It never installs drivers, modifies system files or injects code into other processes.
 - It writes only to:

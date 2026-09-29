@@ -78,7 +78,7 @@ Audio Pilot Manager gives you the control Windows' own volume mixer never quite 
 
 ## Safe by design
 
-- **No network access at all.** No telemetry, no update pings, no accounts, no ads. The only links that ever open are the Patreon and GitHub buttons, and only when you click them.
+- **No telemetry, no accounts, no ads.** The only network request is the update check: once a day it asks GitHub for the latest release (you can turn it off, or check by hand, in Settings → Updates). Updates are downloaded only when you click Install, and are verified against the release's SHA-256 checksums before they run.
 - **No administrator rights.** It runs as your normal user, and the installer installs just for you by default.
 - **Only documented Windows audio interfaces** (Core Audio / WASAPI). It never installs drivers, never touches system files, and never injects into other apps. The one exception is how the "Make default" button sets the default device: through the same interface the Windows Sound control panel uses, as every audio switcher does.
 - **Your data stays on your PC:** settings in `%AppData%\AudioPilotManager\settings.json`, a small log in `%LocalAppData%\AudioPilotManager\logs`. Both can be opened from **Settings → Privacy & safety**.

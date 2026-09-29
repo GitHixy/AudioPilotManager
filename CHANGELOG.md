@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — 2026-09-29
+
+- Updates: a daily check for new releases on GitHub (can be turned off), a tray notification when one is out, and one-click install from Settings. Downloads are verified against the release's SHA-256 checksums; the installed version updates through Setup, the portable one replaces its own .exe.
+
 ## 1.0.0 — 2026-09-28
 
 First release.

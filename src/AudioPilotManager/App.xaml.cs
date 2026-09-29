@@ -66,6 +66,7 @@ public partial class App : Application
         _settings = new SettingsService();
         _settings.Load();
         StartupService.RepairPathIfEnabled();
+        UpdateService.CleanUpLeftovers();
         ThemeService.Apply(_settings.Current.Theme, _settings.Current.Accent, _settings.Current.UseBackdrop);
         Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
@@ -100,6 +101,10 @@ public partial class App : Application
         _tray.LeftClick += (_, _) => ToggleFlyout();
         _tray.OpenRequested += (_, _) => ShowMainWindow();
         _tray.ExitRequested += (_, _) => ExitApp();
+        _tray.UpdatesRequested += (_, _) => ShowUpdates();
+
+        _vm.Updates.UpdateFound += update => _tray.ShowUpdateAvailable("v" + update.Version.ToString(3));
+        _vm.Updates.ExitRequested += (_, _) => ExitApp();
 
         _hotkeys = new HotkeyService();
         RegisterHotkeys();
@@ -167,6 +172,13 @@ public partial class App : Application
         _flyout?.Hide();
         _window.Reveal();
         UpdateMetering();
+    }
+
+    private void ShowUpdates()
+    {
+        if (_vm is null) return;
+        _vm.SelectedPage = 3; // Settings
+        ShowMainWindow();
     }
 
     private void ToggleMainWindow()
@@ -239,6 +251,9 @@ public partial class App : Application
             _showEvent?.Dispose();
             _mutex?.ReleaseMutex();
             _mutex?.Dispose();
+            _mutex = null;
+            // Only now, so the installer or new exe doesn't find this copy still holding the mutex.
+            UpdateService.LaunchPending();
         }
         catch (Exception ex)
         {

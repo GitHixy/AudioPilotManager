@@ -29,6 +29,7 @@ public sealed class MainViewModel : ObservableObject
     {
         Audio = audio;
         _settingsService = settings;
+        Updates = new UpdateViewModel(settings);
 
         Nav = new[]
         {
@@ -96,6 +97,7 @@ public sealed class MainViewModel : ObservableObject
     }
 
     public AudioService Audio { get; }
+    public UpdateViewModel Updates { get; }
     private AppSettings S => _settingsService.Current;
 
     public event Action<string, string>? OsdRequested;

@@ -73,12 +73,19 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+; The in-app updater runs Setup silently with /relaunch=1: start the app again once it's done.
+Filename: "{app}\{#AppExe}"; Flags: nowait runasoriginaluser; Check: ShouldRelaunch
 
 [UninstallDelete]
 ; Settings in %AppData% are kept on purpose (reinstalling keeps your profiles).
 Type: filesandordirs; Name: "{localappdata}\AudioPilotManager\logs"
 
 [Code]
+function ShouldRelaunch: Boolean;
+begin
+  Result := WizardSilent and (ExpandConstant('{param:relaunch|0}') = '1');
+end;
+
 // Make sure the Run value never survives an uninstall, even if it was created from inside the app.
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin

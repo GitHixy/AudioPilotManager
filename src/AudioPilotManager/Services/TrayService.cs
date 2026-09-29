@@ -14,6 +14,7 @@ public sealed class TrayService : IDisposable
     private readonly MainViewModel _vm;
     private readonly ContextMenuStrip _menu;
     private bool _hintShown;
+    private bool _balloonIsUpdate;
 
     public TrayService(MainViewModel vm)
     {
@@ -33,11 +34,17 @@ public sealed class TrayService : IDisposable
             if (e.Button == MouseButtons.Left) LeftClick?.Invoke(this, EventArgs.Empty);
         };
         _icon.MouseMove += (_, _) => UpdateTooltip();
+        _icon.BalloonTipClicked += (_, _) =>
+        {
+            if (_balloonIsUpdate) UpdatesRequested?.Invoke(this, EventArgs.Empty);
+        };
+        _icon.BalloonTipClosed += (_, _) => _balloonIsUpdate = false;
     }
 
     public event EventHandler? LeftClick;
     public event EventHandler? OpenRequested;
     public event EventHandler? ExitRequested;
+    public event EventHandler? UpdatesRequested;
 
     private static Icon LoadIcon()
     {
@@ -71,7 +78,14 @@ public sealed class TrayService : IDisposable
     {
         if (_hintShown) return;
         _hintShown = true;
+        _balloonIsUpdate = false;
         _icon.ShowBalloonTip(3000, "Still here", "Audio Pilot Manager keeps running in the notification area. Right-click the icon to exit.", ToolTipIcon.None);
+    }
+
+    public void ShowUpdateAvailable(string version)
+    {
+        _balloonIsUpdate = true;
+        _icon.ShowBalloonTip(8000, "Update available", $"Audio Pilot Manager {version} is ready. Click here to see what's new and install it.", ToolTipIcon.Info);
     }
 
     private void BuildMenu()
@@ -125,6 +139,8 @@ public sealed class TrayService : IDisposable
         }
 
         _menu.Items.Add(new ToolStripSeparator());
+        if (_vm.Updates.IsAvailable)
+            Add($"Update to {_vm.Updates.AvailableVersion}…", () => UpdatesRequested?.Invoke(this, EventArgs.Empty));
         Add("♥  Support on Patreon", () => _vm.OpenPatreonCommand.Execute(null));
         Add("Exit", () => ExitRequested?.Invoke(this, EventArgs.Empty));
     }
